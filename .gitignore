@@ -1,3 +1,6 @@
 /venv
 *.xml
 *.tfrecord
+IAM_Words
+*.tz
+logs
