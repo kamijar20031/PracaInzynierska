@@ -31,8 +31,8 @@ from zipfile import ZipFile
 PADDING_TOKEN = -1
 DATASET_NAME = "temp"
 height = 32
-width =  256
-batch_size = 32
+width = 512
+batch_size = 16
 learning_rate = 0.0005
 train_epochs = 500
 train_workers = 20
@@ -45,7 +45,6 @@ options.experimental_optimization.parallel_batch = True
 
 # CER i WER zabrane z MLTU. Metryka która liczy to ile znakow trzeba podmienic żeby predykcja była poprawna (C) i to czy w ogóle słowa są błędne (W)
 
-import tensorflow as tf
 
 class CERMetric(tf.keras.metrics.Metric):
     def __init__(self, padding_token, name="CER", **kwargs):
@@ -239,13 +238,11 @@ x = convBlock(inputs, 32, 1, True)
 x = layers.MaxPooling2D((2,2))(x) 
 x = convBlock(x, 64, 1, True)
 x = convBlock(x, 128, 1, False)
-x = layers.MaxPooling2D((2,1))(x) 
-x = convBlock(x, 128, 1, True)
-x = convBlock(x, 256, 1, False)
+x = convBlock(x, 256, 1, True)
+x = convBlock(x, 512, 1, False)
 squeezed = layers.Permute((2, 1, 3))(x)
 squeezed = layers.Reshape((x.shape[2], x.shape[1]*x.shape[3]))(squeezed)
-squeezed = layers.Dense(512)(squeezed)
-blstm = layers.Bidirectional(layers.LSTM(256, return_sequences=True))(squeezed)
+blstm = layers.Bidirectional(layers.LSTM(512, return_sequences=True))(squeezed)
 blstm = layers.Dropout(0.3)(blstm)
 blstm = layers.Bidirectional(layers.LSTM(256, return_sequences=True))(blstm)
 blstm = layers.Dropout(0.3)(blstm)

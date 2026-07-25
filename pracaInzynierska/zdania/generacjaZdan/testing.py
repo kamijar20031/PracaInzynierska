@@ -4,7 +4,7 @@ import pickle
 import os
 
 height = 32
-width = 256
+width = 512
 
 # wczytanie slownika
 vocab = pickle.load(open('vocab.pkl', 'rb'))
