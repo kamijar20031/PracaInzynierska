@@ -134,8 +134,7 @@ def encodeLabel(image, label):
     label = char_to_num(chars)
     return image, label
 
-def convBlock(prev, filter, strides, skip):
-    x_skip = prev
+def convBlock(prev, filter, strides):
     x = layers.Conv2D(filter, 3, padding = "same", strides = strides, kernel_initializer="he_uniform")(prev)
     x = layers.BatchNormalization()(x)
     x = layers.LeakyReLU(alpha=0.1)(x)

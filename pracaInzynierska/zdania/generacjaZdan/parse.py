@@ -26,7 +26,7 @@ def parse_wiki(path):
 
 with open("wynik.txt", "w") as f:
     for i, text in enumerate(parse_wiki("plwiki.xml")):
-        words = re.split(r'(?<=[ ,.!?])',text)
+        words = text.split()
         sentences = []
         j = 0
         while j < len(words):
