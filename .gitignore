@@ -10,3 +10,5 @@ modele
 zapisaneModele
 slowa
 PNG_SPLIT*
+*.json
+.*pt
