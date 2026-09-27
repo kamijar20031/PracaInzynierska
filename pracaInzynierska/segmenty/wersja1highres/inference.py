@@ -37,17 +37,16 @@ for img in imgs:
             for X in range(GRID):
                 for box in range(BOXES):
                     confidence = (torch.sigmoid(output[Y][X][box*5 + 4]))
-                    if confidence > 0.5:
-                        coord = (torch.sigmoid(output[Y][X][box*5:2+box*5]))
-                        size = (torch.sigmoid(output[Y][X][box*5+2:4+box*5]))
-                        x, y = ((X+coord[0])*SIZE/GRID*xScale, (Y+coord[1])*SIZE/GRID*yScale)
-                        w, h = (size[0]*SIZE*xScale, size[1]*SIZE*yScale)
-                        x -= w/2
-                        y -= h/2
-                        gray = int(255 * confidence.item())
-                        draw.line((x, y, x+w, y), fill=(0,0,0,gray))
-                        draw.line((x+w, y, x+w, y+h), fill=(0,0,0,gray))
-                        draw.line((x+w, y+h, x, y+h), fill=(0,0,0,gray))
-                        draw.line((x, y+h, x, y), fill=(0,0,0,gray))
+                    coord = (torch.sigmoid(output[Y][X][box*5:2+box*5]))
+                    size = (torch.sigmoid(output[Y][X][box*5+2:4+box*5]))
+                    x, y = ((X+coord[0])*SIZE/GRID*xScale, (Y+coord[1])*SIZE/GRID*yScale)
+                    w, h = (size[0]*SIZE*xScale, size[1]*SIZE*yScale)
+                    x -= w/2
+                    y -= h/2
+                    gray = int(255 * confidence.item())
+                    draw.line((x, y, x+w, y), fill=(0,0,0,gray))
+                    draw.line((x+w, y, x+w, y+h), fill=(0,0,0,gray))
+                    draw.line((x+w, y+h, x, y+h), fill=(0,0,0,gray))
+                    draw.line((x, y+h, x, y), fill=(0,0,0,gray))
         im = Image.alpha_composite(im, overlay)
         im.save(f"../results/result-{img}", "PNG")
