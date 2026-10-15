@@ -8,5 +8,5 @@ IMG_SUBFOLDER = f"../../PNG_SPLIT_{percent}"
 SIZE = 448
 GRID = 14
 BOXES = 2
-CLASSES = 12
+CLASSES = 11
 

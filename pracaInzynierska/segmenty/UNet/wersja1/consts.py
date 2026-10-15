@@ -6,5 +6,5 @@ COCO_VAL = f"../../val_{percent}.json"
 IMG_SUBFOLDER = f"../../PNG_SPLIT_{percent}"
 
 SIZE = 480
-CLASSES = 11
+CLASSES = 12
 
