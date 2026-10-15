@@ -13,3 +13,4 @@ PNG_SPLIT*
 *.json
 *.pt
 *.pyc
+__pycache__

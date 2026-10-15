@@ -28,5 +28,5 @@ for image, output in train_loader:
             draw.line((x+w, y, x+w, y+h), fill=(0,0,0,int(255*confidence)))
             draw.line((x+w, y+h, x, y+h), fill=(0,0,0,int(255*confidence)))
             draw.line((x, y+h, x, y), fill=(0,0,0,int(255*confidence))) 
-    im.save(f"results/result-tensor-image.png", "PNG")
+    im.save(f"../results/result-tensor-image.png", "PNG")
     break

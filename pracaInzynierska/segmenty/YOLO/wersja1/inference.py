@@ -20,7 +20,7 @@ def prepare_image(path):
     image = 1.0 - functional.to_tensor(image)
     return image.unsqueeze(0)
 
-imgs = os.listdir("../pics")
+imgs = os.listdir("../../pics")
 for img in imgs:
     image = prepare_image(f"../pics/{img}")
     image = image.to(device)
@@ -28,7 +28,7 @@ for img in imgs:
         output = model(image)
     print(output.shape)
     output = output[0]
-    with Image.open(f"../pics/{img}").convert("RGBA") as im:
+    with Image.open(f"../../pics/{img}").convert("RGBA") as im:
         w, h = im.size
         xScale, yScale = (w/SIZE, h/SIZE)
         overlay = Image.new("RGBA", im.size, (0, 0, 0, 0))
