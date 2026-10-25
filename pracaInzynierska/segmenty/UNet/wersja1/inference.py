@@ -29,17 +29,17 @@ for img in imgs:
     pred = output.argmax(dim=1)[0].cpu().numpy()
     colors = np.array([
         [255,255,255],  # BG
-        [0,255,0],      # CAPTION
-        [255,255,0],    # FOOTNOTE
+        [255,0,0],      # CAPTION (jako TEXT)
+        [255,0,0],      # FOOTNOTE (jako TEXT)
         [0,255,255],    # FORMULA
-        [200,0,100],      # LIST ITEM
-        [200,100,0],    # PAGE FOOTER
-        [0,128,128],    # PAGE HEADER
+        [255,0,0],      # LIST ITEM (jako TEXT)
+        [255,0,0],      # PAGE FOOTER (jako TEXT)
+        [255,0,0],      # PAGE HEADER (jako TEXT)
         [128,0,128],    # PICTURE
-        [128,128,0],    # SECTION HEADER
-        [128,128,128],  # TABLE
+        [0,255,0],      # SECTION HEADER (jako TITLE)
+        [20,20,20],     # TABLE
         [255,0,0],      # TEXT
-        [255,0,255],    # TITLE
+        [0,255,0],      # TITLE (jako TITLE)
     ], dtype=np.uint8)
     mask = colors[pred]
     mask = Image.fromarray(mask, mode="RGB").convert("RGBA")
