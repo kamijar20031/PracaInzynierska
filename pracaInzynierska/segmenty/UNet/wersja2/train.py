@@ -29,7 +29,7 @@ print("Przygotowywanie modelu...")
 
 model = UNETBasedModel()
 model.to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=0.01)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=patience//3)
 scaler = GradScaler("cuda")
 criterion = torch.nn.CrossEntropyLoss()
