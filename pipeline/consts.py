@@ -1,0 +1,12 @@
+percent = 0.75
+
+COCO_TEST = f"../../test_{percent}.json"
+COCO_TRAIN = f"../../train_{percent}.json"
+COCO_VAL = f"../../val_{percent}.json"
+IMG_SUBFOLDER = f"../../PNG_SPLIT_{percent}"
+
+SIZE = 416
+CLASSES = 6
+
+OCR_HEIGHT = 32
+OCR_WIDTH = 1024

@@ -18,3 +18,8 @@ __pycache__
 *.log
 pracaInzynierska/slowa/generacjaSlow/words.txt
 pracaInzynierska/slowa/generacjaSlow/wynik.txt
+*.pdf
+*.png
+*.txt
+*.egg-info
+*.epub
