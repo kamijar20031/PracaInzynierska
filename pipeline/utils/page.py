@@ -5,6 +5,7 @@ import random
 import cv2
 from segmenty.UNet.inferenceUtils.others import resizePred
 from segmenty.UNet.inferenceUtils.postprocessing import *
+
 def detectTextLines(crop):
     gray = np.array(crop.convert("L"))
     binary = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 23, 15)
@@ -84,7 +85,7 @@ class Page:
                 if height>5 and width>5:
                     line = cropped.crop((lx1, ly1, lx2, ly2))
                     line = ImageOps.expand(line, border=int(height/4), fill="white")
-                    text = OCRModelManager.getTextFromImage(image)
+                    text = OCRModelManager.getTextFromImage(line)
                     textLines.append(text)
                     # print(f"{text}")
                     # line.save(f"temp/segment-{j}-text-{i}.png")

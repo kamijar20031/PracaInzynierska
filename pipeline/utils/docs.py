@@ -17,7 +17,6 @@ class DocPart:
 class DocImage(DocPart):
     num=1
     def __init__(self, data, coords):
-        DocImage.num+=1
         super().__init__(data, coords)
         self.type="image"
     def __repr__(self):
@@ -29,13 +28,13 @@ class DocImage(DocPart):
         filename = f"image-{uuid.uuid4().hex}.png"
         image = epub.EpubImage(uid=f"Obraz {DocImage.num}", file_name=f"Images/{filename}", media_type="image/png", content=buffer.getvalue())
         Document.addImage(image)
+        DocImage.num+=1
         return f"<img src='../Images/{filename}' alt='Obraz {DocImage.num}'/>"
 
 
 class DocFormula(DocPart):
     num=1
     def __init__(self, data, coords):
-        DocFormula.num+=1
         super().__init__(data, coords)
         self.type="formula"
     def __repr__(self):
@@ -47,6 +46,7 @@ class DocFormula(DocPart):
         filename = f"formula-{uuid.uuid4().hex}.png"
         image = epub.EpubImage(uid=f"Wzor {DocFormula.num}", file_name=f"Formulas/{filename}", media_type="image/png", content=buffer.getvalue())
         Document.addImage(image)
+        DocFormula.num+=1
         return f"<img src='../Formulas/{filename}' alt='Wzor {DocImage.num}'/>"
 
 
@@ -87,8 +87,8 @@ class Document():
 
     @classmethod
     def process(cls):
-        elements = []
         for page in cls.pages:
+            elements = []
             # Moze pozniej mozna dodac jakas bardziej skomplikowana logike łączenia linijek
             for segment in page.texts:
                 text = " ".join(segment["text"])
@@ -104,7 +104,12 @@ class Document():
                 crop = img.crop(formula)
                 elements.append(DocFormula(crop, formula))
             w, h = img.size
+            
+            temp = elements
             elements = XYCut(elements, w, h,  w/100)
+            if len(elements)!=len(temp):
+                print(page.image["file"])
+                print(len(temp), len(elements))
             for el in elements:
                 cls.parts.append(el.addToPage())
     

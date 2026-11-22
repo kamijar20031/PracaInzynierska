@@ -27,10 +27,12 @@ def XYCut(e, width, height, gap):
                     separated[i].append(element)
                     break
         prevStart = start
+        prevMiddle = 0
+        flag = False
         for middle in gaps:
             separatedStarts.append(prevStart)
             separatedEnds.append(middle)
-            prevStart += middle
+            prevStart = middle
         return separated, separatedStarts, separatedEnds
 
     def getBboxProjection(elements, start, end, vertical):
@@ -51,11 +53,10 @@ def XYCut(e, width, height, gap):
         w = x1-x0
         h = y1-y0
         if len(elements)==1:
-            if not start:
-                results.extend(elements)
-            return False
+            results.extend(elements)
+            return True
         if not elements or w<30 or h<30:
-            return
+            return False
         proj = getBboxProjection(elements, val1, val2, vertical)
         gaps = getGaps(proj, val1)
         if gaps:
