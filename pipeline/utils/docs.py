@@ -6,6 +6,23 @@ import cv2
 import numpy as np
 from pipeline.utils.XYCut import *
 
+def createImageData(data, filename):
+    buffer= BytesIO()
+    data.save(buffer, format="PNG")
+    image = epub.EpubImage(uid=f"Obraz-{filename}", file_name=f"Images/{filename}", media_type="image/png", content=buffer.getvalue())
+    Document.addImage(image)
+
+def addResponsiveImageVersions(data, sizes):
+    variants = []
+    w,h = data.size
+    for width in sizes:
+        if w<width:
+            break
+        copy = data.copy()
+        copy.thumbnail((width, h), Image.Resampling.LANCZOS)
+        variants.append(copy)
+    return variants
+
 class DocPart:
     def __init__(self, data, coords):
         self.data = data
@@ -15,7 +32,7 @@ class DocPart:
 
 
 class DocImage(DocPart):
-    num=1
+    num=0
     def __init__(self, data, coords):
         super().__init__(data, coords)
         self.type="image"
@@ -23,13 +40,24 @@ class DocImage(DocPart):
         return f"Image: {super().__str__()}"
 
     def addToPage(self):
-        buffer= BytesIO()
-        self.data.save(buffer, format="PNG")
-        filename = f"image-{uuid.uuid4().hex}.png"
-        image = epub.EpubImage(uid=f"Obraz {DocImage.num}", file_name=f"Images/{filename}", media_type="image/png", content=buffer.getvalue())
-        Document.addImage(image)
         DocImage.num+=1
-        return f"<img src='../Images/{filename}' alt='Obraz {DocImage.num}'/>"
+        sizes = [512,768,1024]
+        w = self.data.size[0]
+        variants = addResponsiveImageVersions(self.data, sizes)
+        base = f"image-{uuid.uuid4().hex}"
+        for i, variant in enumerate(variants):
+            name = f"{base}-{sizes[i]}.png"
+            createImageData(variant, name)
+        smallest = min(w, sizes[0])
+        if smallest==w:
+            name = f"{base}-{w}.png"
+            createImageData(self.data, name)
+        srcset = ""
+        if len(variants)!=0:
+            srcset = ", ".join([f"../Images/{base}-{width}.png {width}w" for width in sizes[:len(variants)]])
+            srcset = f"srcset='{srcset}'"
+        
+        return f"<img src='../Images/{base}-{smallest}.png'  alt='Obraz {DocImage.num}' {srcset} sizes='100vw'/>"
 
 
 class DocFormula(DocPart):
@@ -41,13 +69,25 @@ class DocFormula(DocPart):
         return f"Image: {super().__str__()}"
 
     def addToPage(self):
-        buffer= BytesIO()
-        self.data.save(buffer, format="PNG")
-        filename = f"formula-{uuid.uuid4().hex}.png"
-        image = epub.EpubImage(uid=f"Wzor {DocFormula.num}", file_name=f"Formulas/{filename}", media_type="image/png", content=buffer.getvalue())
-        Document.addImage(image)
         DocFormula.num+=1
-        return f"<img src='../Formulas/{filename}' alt='Wzor {DocImage.num}'/>"
+        sizes = [512,768,1024]
+        w = self.data.size[0]
+        variants = addResponsiveImageVersions(self.data, sizes)
+        base = f"formula-{uuid.uuid4().hex}"
+        for i, variant in enumerate(variants):
+            name = f"{base}-{sizes[i]}.png"
+            createImageData(variant, name)
+        smallest = min(w, sizes[0])
+        if smallest==w:
+            name = f"{base}-{w}.png"
+            createImageData(self.data, name)
+        srcset = ""
+        if len(variants)!=0:
+            srcset = ", ".join([f"../Images/{base}-{width}.png {width}w" for width in sizes[:len(variants)]])
+            srcset = f"srcset='{srcset}'"
+        return f"<img src='../Images/{base}-{smallest}.png'  alt='Wzór {DocFormula.num}' {srcset} sizes='100vw'/>"
+
+
 
 
 class DocText(DocPart):

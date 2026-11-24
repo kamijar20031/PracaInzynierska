@@ -71,7 +71,7 @@ def XYCut(e, width, height, gap):
         else:
             # Dojdzie do takiej sytuacji gdy np jest zbyt male rozgraniczenie
             if not start:
-                elements.sort(key=lambda e: e.coords[2+vertical])
+                elements.sort(key=lambda e: e.coords[0+vertical])
                 results.extend(elements)
             return False
     if not r(e, 0, 0, width, height, False, True):

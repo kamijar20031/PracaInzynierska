@@ -1,6 +1,7 @@
 import torch
 from PIL import Image, ImageDraw
-
+import cv2
+from scipy import ndimage
 import torch.nn.functional as F
 import os 
 from consts import *
@@ -11,12 +12,13 @@ from segmenty.UNet.inferenceUtils.masks import Classes, Masks, getPredictionMask
 from segmenty.UNet.model.modelManager import UNetModelManager
 from segmenty.UNet.inferenceUtils.others import resizePred
 from segmenty.UNet.inferenceUtils.postprocessing import *
+from utils.others import naturalSort
 
 UNetModelManager.init("model.pt")
 
 imgs = os.listdir("../../pics")
-imgs = imgs[10:30]
-for img in imgs:
+imgs.sort(key=naturalSort)
+for img in imgs[0:60]:
     pred = getPredictionMasks(f"../../pics/{img}")
 
     colors = np.array([
@@ -25,20 +27,18 @@ for img in imgs:
         [0,0,255],      # FORMULA
         [128,0,128],    # PICTURE
         [0,255,0],      # TITLE
-        [20,20,20],     # TABLE
     ], dtype=np.uint8)
-    
+
     with Image.open(f"../../pics/{img}").convert("RGBA") as im:
         w, h = im.size
         pred = resizePred((w,h), pred)
         mask = colors[pred]
         mask = Image.fromarray(mask, mode="RGB").convert("RGBA")
-        imagesList, pred = extractImages(pred, (w,h))
-        texts, titles, formulas = extractTexts(pred, (w,h))
+        texts, titles, formulas, images = extractElements(pred, (w,h))
         if not os.path.exists(f"results/resultsCrops"):
             os.mkdir(f"results/resultsCrops")
-            
-        for image in imagesList:
+
+        for i, image in enumerate(images):
             cropped = im.crop(image)
             if not os.path.exists(f"results/resultsCrops/{img}"):
                 os.mkdir(f"results/resultsCrops/{img}")
@@ -64,6 +64,7 @@ for img in imgs:
             if not os.path.exists(f"results/resultsCrops/{img}"):
                 os.mkdir(f"results/resultsCrops/{img}")
             cropped.save(f"results/resultsCrops/{img}/formula-{i}.png", "PNG")
+
 
         overlay = Image.blend(im, mask, alpha=0.4)
         overlay.save(f"results/result-{img}", "PNG")

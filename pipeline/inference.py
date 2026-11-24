@@ -13,7 +13,7 @@ OCRModelManager.init("modelOCR.pt", "vocab.pkl")
 pages = []
 imgs = os.listdir("../pics")
 imgs.sort(key=naturalSort)
-for img in imgs[:20]:
+for img in imgs:
     print(f"NOW PROCESSING IMAGE: {img}")
     pred = getPredictionMasks(f"../pics/{img}")
     page = Page()

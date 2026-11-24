@@ -3,6 +3,7 @@ import torch
 from zdania.utils.model import CTCDecode, decodeText, prepareImage
 import pickle
 from zdania.model.model import OCRModel
+from html import escape
 
 class OCRModelManager(ModelManager):
     model = None
@@ -30,5 +31,5 @@ class OCRModelManager(ModelManager):
         prediction = output.argmax(dim=2)
         prediction = prediction[0].cpu().numpy()
         tokens = CTCDecode(prediction)
-        text = decodeText(tokens, cls.decodeDict)
+        text = escape(decodeText(tokens, cls.decodeDict))
         return text

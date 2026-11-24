@@ -1,4 +1,4 @@
-from model import *
+from segmenty.UNet.model.model import *
 from torch.amp import autocast, GradScaler
 from tqdm import tqdm
 
@@ -23,7 +23,7 @@ valDataset = DocLayNetDataset(COCO_VAL)
 print("Przygotowywanie DataLoader...")
 
 train_loader = DataLoader(trainDataset, batch_size=batch_size, shuffle=True, num_workers=train_workers, pin_memory=True)
-val_loader = DataLoader(valDataset, batch_size=batch_size, shuffle=False, num_workers=train_workers, persistent_workers=True)
+val_loader = DataLoader(valDataset, batch_size=batch_size, shuffle=False, num_workers=0, pin_memory=False)
 
 print("Przygotowywanie modelu...")
 

@@ -1,6 +1,6 @@
 import pymupdf
 
-doc = pymupdf.open("../pdf/design.pdf")
+doc = pymupdf.open("../pdf/bazy.pdf")
 pages = doc[0:]
 for (i, page) in enumerate(pages):
     pix = page.get_pixmap(dpi=150)

@@ -18,7 +18,7 @@ classMap = {
     6: 1,       # Page header jako Text
     7: 3,       # Picture
     8: 4,       # Section Header jako Title
-    9: 5,       # Table
+    9: 3,       # Table jako picture
     10: 1,      # Text
     11: 4       # Title
 }
@@ -50,7 +50,11 @@ class DocLayNetDataset(Dataset):
             x, y, w, h = int(x*xScale), int(y*yScale), int(w*xScale), int(h*yScale)
             y2 = min(y+h, SIZE)
             x2 = min(x+w, SIZE)
-            target[y:y2, x:x2] = classMap[ann["category_id"]]
+            if ann["category_id"]==9:
+                maskTemp = (target[y:y2, x:x2]==0)
+                target[y:y2, x:x2][maskTemp] = classMap[ann["category_id"]]
+            else:
+                target[y:y2, x:x2] = classMap[ann["category_id"]]
         return image, target
 
 

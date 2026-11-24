@@ -12,31 +12,27 @@ def detectTextLines(crop):
     # img = Image.fromarray(binary)
     # ran = random.random()
     # img.save(f"temp/{ran}-basic.png")
-    binary = ndimage.binary_dilation(binary, structure=np.ones((1, 5), dtype=bool),iterations=5)
+    binary = ndimage.binary_dilation(binary, structure=np.ones((1, 5), dtype=bool),iterations=2)
     binary = ndimage.binary_erosion(binary, structure=np.ones((3, 1), dtype=bool),iterations=3)
-    binary = ndimage.binary_dilation(binary, structure=np.ones((1, 5), dtype=bool),iterations=5)
-    binary = ndimage.binary_dilation(binary, structure=np.ones((1, 3), dtype=bool),iterations=4)
+    binary = ndimage.binary_dilation(binary, structure=np.ones((1, 9), dtype=bool),iterations=7)
+    binary = ndimage.binary_opening(binary, structure=np.ones((2, 15), dtype=bool))
+    blurred = ndimage.gaussian_filter(binary.astype(float), sigma=2)
+    binary = blurred > 0.4
     # img = Image.fromarray(binary)
     # img.save(f"temp/{ran}-dilate.png")
+
     labels, num_lines = ndimage.label(binary)
     dilated_labels = labels.copy()
+    
     for i in range(1, num_lines + 1):
         line = labels == i
-        dilated = ndimage.binary_dilation(line, structure=np.ones((3, 3)), iterations=3)
+        pixels = np.count_nonzero(line)
+        if pixels<500:
+            continue
+        dilated = ndimage.binary_dilation(line, structure=np.ones((3, 3)), iterations=5)
         # MUSI BYC DILATED_LABELS==0, BO INACZEJ NADPISZE INNE
         dilated_labels[dilated & (dilated_labels == 0)] = i
-    regions = ndimage.find_objects(dilated_labels)
-    lines = []
-    for region in regions:
-        if region is None:
-            continue
-        y1, y2 = region[0].start, region[0].stop
-        ys, xs = np.where(binary[y1:y2] > 0)
-        if len(xs) == 0:
-            continue
-        x1 = int(xs.min())
-        x2 = int(xs.max()) + 1
-        lines.append((x1, y1, x2, y2))
+    lines = [(x.start,y.start,x.stop,y.stop) for y, x in ndimage.find_objects(dilated_labels)]
     return lines
 
 
@@ -61,13 +57,9 @@ class Page:
         self.formulas = []
         self.tables = []
     
-    def extractImages(self):
-        imagesList, pred = extractImages(self.pred, self.image["res"])
-        self.images = imagesList
-        self.pred = pred
-
-    def extractTexts(self):
-        texts, titles, formulas = extractTexts(self.pred, self.image["res"])
+    def extractElements(self):
+        texts, titles, formulas, images = extractElements(self.pred, self.image["res"])
+        self.images = images
         self.texts = texts
         self.titles = titles
         self.formulas = formulas
@@ -82,7 +74,7 @@ class Page:
             for (i, (lx1, ly1, lx2, ly2)) in enumerate(lines):
                 height = ly2-ly1
                 width = lx2-lx1
-                if height>5 and width>5:
+                if height>8 and width>5 and height*width>1000:
                     line = cropped.crop((lx1, ly1, lx2, ly2))
                     line = ImageOps.expand(line, border=int(height/4), fill="white")
                     text = OCRModelManager.getTextFromImage(line)
@@ -94,7 +86,6 @@ class Page:
 
     def processImage(self):
         self.pred = resizePred(self.image["res"], self.pred)
-        self.extractImages()
-        self.extractTexts()
+        self.extractElements()
         self.predictTextLines()
 
